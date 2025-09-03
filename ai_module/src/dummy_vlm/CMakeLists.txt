@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(dummy_vlm)
 
-set(CMAKE_BUILD_TYPE Release)
-set(BUILD_STATIC_LIBS ON)
-set(BUILD_SHARED_LIBS OFF)
-set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
+# set(CMAKE_BUILD_TYPE Release)
+# set(BUILD_STATIC_LIBS ON)
+# set(BUILD_SHARED_LIBS OFF)
+# set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
 ## Find catkin macros and libraries
 find_package(catkin REQUIRED COMPONENTS
@@ -18,10 +18,10 @@ find_package(catkin REQUIRED COMPONENTS
 ###################################
 
 catkin_package(
-  CATKIN_DEPENDS
-  roscpp
-  std_msgs
-  sensor_msgs
+  # CATKIN_DEPENDS
+  # roscpp
+  # std_msgs
+  # sensor_msgs
 )
 
 ###########
@@ -53,6 +53,12 @@ install(TARGETS dummyVLM
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
+catkin_install_python(PROGRAMS
+  scripts/pydummyVLM.py
+  scripts/publisher.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}/scripts
 )
 
 install(DIRECTORY launch/

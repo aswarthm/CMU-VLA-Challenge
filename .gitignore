@@ -9,3 +9,8 @@ system/unity/devel/
 .catkin_workspace
 *.pkl
 *.pth
+**/build
+**/devel
+**/install
+**/log
+**/build

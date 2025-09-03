@@ -6,4 +6,7 @@
     <param name="waypointReachDis" type="double" value="1.0" />
   </node>
 
+    <node pkg="dummy_vlm" type="publisher.py" name="publisher" output="screen" required="true">
+  </node>
+
 </launch>
