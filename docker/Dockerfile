@@ -30,10 +30,6 @@ RUN apt-get update && apt-get install --no-install-recommends -y curl gnupg2 lsb
     python3-pip \
     ros-dev-tools
 
-RUN apt-get install -y --no-install-recommends ros-foxy-tf-transformations && \
-    pip3 install transforms3d
-
-
 # Source ROS
 RUN echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
 RUN echo "source /opt/ros/foxy/setup.bash" >> ~/.bashrc
@@ -46,12 +42,20 @@ RUN git clone -b foxy https://github.com/ros2/ros1_bridge.git ros1_bridge && \
                   colcon build --symlink-install --packages-select ros1_bridge --cmake-force-configure && \
                   source install/local_setup.bash"
 
+RUN pip install opencv-python Pillow transforms3d "scipy<1.6.0"
+
 RUN apt-get install --no-install-recommends -y \ 
     ros-foxy-sensor-msgs-py \
     ros-foxy-plotjuggler-ros \
     ros-foxy-cv-bridge \
-    ros-foxy-vision-opencv && \
-    pip install opencv-python Pillow
+    ros-foxy-tf-transformations \
+    ros-foxy-vision-opencv
+
+
+RUN apt-get install --no-install-recommends -y \
+    python3.9 python3.9-distutils && \
+    curl -sS https://bootstrap.pypa.io/get-pip.py | python3.9
+RUN python3.9 -m pip install google-genai flask
 
 
 

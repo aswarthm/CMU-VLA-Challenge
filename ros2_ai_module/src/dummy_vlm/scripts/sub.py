@@ -5,33 +5,22 @@ import math
 
 import rclpy
 from rclpy.node import Node
+from rclpy.executors import MultiThreadedExecutor
 
 from std_msgs.msg import String, Int32
 
-from nav_msgs.msg import Odometry
 from geometry_msgs.msg import Pose2D
-from visualization_msgs.msg import Marker, MarkerArray
+from visualization_msgs.msg import Marker
 from tf_transformations import quaternion_from_euler
-from sensor_msgs.msg import PointCloud2
-from sensor_msgs_py import point_cloud2
 
+from goalsnapper import GoalSnapperNode
+from depth_overlay import DepthOverlayNode
 
 
 class DummyVLM(Node):
 
     def __init__(self):
         super().__init__('dummy_VLM')
-
-        # self.declare_parameter('waypoint_file_dir',
-        #                        rclpy.Parameter.Type.STRING)
-        # self.declare_parameter('object_list_file_dir',
-        #                        rclpy.Parameter.Type.STRING)
-        # self.declare_parameter('waypoint_reach_dis',
-        #                        rclpy.Parameter.Type.DOUBLE)
-
-        # self.waypoint_file_dir = self.get_parameter('waypoint_file_dir')
-        # self.object_list_file_dir = self.get_parameter('object_list_file_dir')
-        # self.waypoint_reach_dis = self.get_parameter('waypoint_reach_dis')
 
         self.obj_mid_x = 3.3707286769194647
         self.obj_mid_y = -2.092013168894541
@@ -46,39 +35,19 @@ class DummyVLM(Node):
         self.waypoint_heading = [0.0, 0.0]
         self.waypoint_dis = 1.0
 
-        self.vehicle_x = 0.0
-        self.vehicle_y = 0.0
         self.question = ""
-
-        self.traversible = None
-        self.cur_semantic = None
 
         self.waypointID = 0
 
-        self.subscription_pose = self.create_subscription(
-            Odometry,
-            "/state_estimation",
-            self.pose_cb,
-            5
-        )
+        self.depthOverlay = depthOverlay
+        self.goalSnapper = goalSnapper
+
+        # self.depth_overlay.get_3d_point(3, 4)
+
         self.subscription_question = self.create_subscription(
             String,
             "/challenge_question",
             self.question_cb,
-            5
-        )
-
-        self.subscription_semantic = self.create_subscription(
-            MarkerArray,
-            "/object_markers",
-            self.semantic_cb,
-            5
-        )
-
-        self.subscription_traversible_area= self.create_subscription(
-            PointCloud2,
-            "/traversable_area",
-            self.traversible_cb,
             5
         )
 
@@ -105,18 +74,6 @@ class DummyVLM(Node):
         self.waypoint_timer = None
         self.get_logger().info("Awaiting question...")
 
-    def semantic_cb(self, markers: MarkerArray):
-        self.cur_semantic = markers
-    
-    def traversible_cb(self, area: PointCloud2):
-        self.traversible = area
-        self.cleaned_traversible = point_cloud2.read_points_list(area)
-        
-
-    def pose_cb(self, odom: Odometry):
-        self.vehicle_x = odom.pose.pose.position.x
-        self.vehicle_y = odom.pose.pose.position.y
-
     def question_cb(self, msg: String):
         self.question = msg.data
         self.get_logger().info(f"I heard: {self.question}")
@@ -124,26 +81,67 @@ class DummyVLM(Node):
     def timer_cb(self):
         if (self.question == ""):
             return
-        self.get_logger().info(f"{self.cur_semantic}\n")
+        #determine question type
+        #handle nagivation in another node
         
 
-        # if (self.question.lower().find("find") == 0):
-        #     self.get_logger().info("Marking and navigating to object")
-        #     self.publish_object_marker()
-        #     self.publish_object_waypoint()
-        # elif (self.question.lower().find("how many") == 0):
-        #     self.del_object_marker()
-        #     ans = randrange(10)
-        #     self.get_logger().info(f"{ans}")
-        #     self.publish_numerical_answer(ans)
-        # else:
-        #     self.del_object_marker()
-        #     self.get_logger().info("Navigation starts")
-        #     self.publish_path_waypoints()
+        if (self.question.lower().find("find") == 0):
+            self.get_logger().info("Marking and navigating to object")
+            self.publish_object_marker()
+            self.publish_object_waypoint()
+        elif (self.question.lower().find("how many") == 0):
+            self.del_object_marker()
+            ans = randrange(10)
+            self.get_logger().info(f"{ans}")
+            self.publish_numerical_answer(ans)
+        else:
+            self.del_object_marker()
+            self.get_logger().info("Navigation starts")
+            self.publish_path_waypoints()
         #     self.get_logger().info("Navigation ends")
 
         self.question = ""
         self.get_logger().info("Awaiting question...")
+
+    
+    def execute_navigate_tool(self, target_id):
+        """Example of executing a navigation command."""
+        
+
+        px_x = 1920 * 60//100
+        px_y = 286
+        world_coordinates = self.depthOverlay.get_3d_point(v = px_y, u = px_x)
+        self.get_logger().info(f"world {world_coordinates}")
+        snapped_coordinates = self.goalSnapper.find_closest_traversable_point(world_coordinates)
+        self.get_logger().info(f"snapped {snapped_coordinates}")
+
+        waypoint_msg = Pose2D()
+
+        waypoint_msg.x = snapped_coordinates[0]
+        waypoint_msg.y = snapped_coordinates[1]
+        waypoint_msg.theta = 0.0
+        self.waypoint_publisher.publish(waypoint_msg)
+
+        # 1. Get the ideal, but potentially unreachable, goal for the target_id
+        unreachable_goal_pose = self.get_pose_from_map(target_id) # Your function to get the pose
+        unreachable_goal_point = [
+            unreachable_goal_pose.position.x,
+            unreachable_goal_pose.position.y,
+            unreachable_goal_pose.position.z
+        ]
+        
+        # 2. Use the helper class to snap it to the closest traversable point
+        if self.goal_snapper.kdtree:
+            reachable_goal_point = self.goal_snapper.snap_point(unreachable_goal_point)
+            
+            if reachable_goal_point:
+                self.get_logger().info(f"Snapped goal {unreachable_goal_point} to {reachable_goal_point}")
+                # 3. Send the guaranteed-to-be-reachable goal to your navigator
+                self.send_goal_to_navigator(reachable_goal_point)
+            else:
+                self.get_logger().error("Failed to snap goal.")
+        else:
+            self.get_logger().warn("Goal snapper not ready yet, cannot navigate.")
 
     def publish_object_waypoint(self):
         waypoint = Pose2D()
@@ -234,11 +232,27 @@ class DummyVLM(Node):
 
 
 def main(args=None):
+    global goalSnapper, depthOverlay
     rclpy.init(args=args)
+
+    goalSnapper = GoalSnapperNode()
+    depthOverlay = DepthOverlayNode()
 
     dummyVLM = DummyVLM()
 
-    rclpy.spin(dummyVLM)
+    executor = MultiThreadedExecutor()
+    executor.add_node(goalSnapper)
+    executor.add_node(depthOverlay)
+
+    executor.add_node(dummyVLM)
+
+    try:
+        executor.spin()
+    finally:
+        dummyVLM.destroy_node()
+        goalSnapper.destroy_node()
+        depthOverlay.destroy_node()
+        rclpy.shutdown()
 
     # Destroy the node explicitly
     # (optional - otherwise it will be done automatically
