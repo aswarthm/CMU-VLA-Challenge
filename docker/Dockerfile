@@ -42,7 +42,7 @@ RUN git clone -b foxy https://github.com/ros2/ros1_bridge.git ros1_bridge && \
                   colcon build --symlink-install --packages-select ros1_bridge --cmake-force-configure && \
                   source install/local_setup.bash"
 
-RUN pip install opencv-python Pillow transforms3d "scipy<1.6.0"
+RUN pip install opencv-python Pillow transforms3d "scipy<1.6.0" requests
 
 RUN apt-get install --no-install-recommends -y \ 
     ros-foxy-sensor-msgs-py \

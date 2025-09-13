@@ -35,12 +35,22 @@ class GoalSnapperNode(Node):
             self.get_logger().info(f"k-d tree built successfully with {len(self.traversable_points_3d)} points.")
             self.destroy_subscription(self.traversable_sub) # We only need the map once.
 
-    def find_closest_traversable_point(self, target_point_3d: list) -> Optional[list]:
-        """Queries the k-d tree to find the closest point in the traversable set."""
+    def find_closest_traversable_point(self, target_point_3d: list, k_neighbors: int = 10, pull_in_factor: float = 0.3) -> Optional[list]:
         if self.kdtree is None:
+            self.get_logger().warn("k-d tree is not built yet. Cannot find closest point.")
             return None
-        # unreachable_goal = [-1.6131314, -5.085049,   1.619012 ]
 
-        distance, index = self.kdtree.query(target_point_3d)
-        closest_point = self.traversable_points_3d[index]
-        return closest_point.tolist()
+        try:
+            distances, indices = self.kdtree.query(target_point_3d, k=k_neighbors)
+            closest_point = self.traversable_points_3d[indices[0]]
+            neighbor_points = self.traversable_points_3d[indices]
+            centroid = np.mean(neighbor_points, axis=0)
+            direction_vector = centroid - closest_point
+            norm = np.linalg.norm(direction_vector)
+            if norm > 0:
+                direction_vector /= norm
+            safer_point = closest_point + direction_vector * pull_in_factor
+            return safer_point.tolist()
+        except Exception as e:
+            self.get_logger().error(f"Error during k-d tree query: {e}")
+            return None

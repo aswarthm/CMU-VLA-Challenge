@@ -1,0 +1,454 @@
+{
+  "1_bottle": {
+    "id": "1",
+    "type": "bottle"
+  },
+  "3_spice jar": {
+    "id": "3",
+    "type": "spice jar"
+  },
+  "5_bottle": {
+    "id": "5",
+    "type": "bottle"
+  },
+  "6_spice jar": {
+    "id": "6",
+    "type": "spice jar"
+  },
+  "9_bottle": {
+    "id": "9",
+    "type": "bottle"
+  },
+  "39_unknown": {
+    "id": "39",
+    "type": "unknown"
+  },
+  "40_unknown": {
+    "id": "40",
+    "type": "unknown"
+  },
+  "96_bowl": {
+    "id": "96",
+    "type": "bowl"
+  },
+  "125_unknown": {
+    "id": "125",
+    "type": "unknown"
+  },
+  "129_drawer": {
+    "id": "129",
+    "type": "drawer"
+  },
+  "130_drawer": {
+    "id": "130",
+    "type": "drawer"
+  },
+  "131_drawer": {
+    "id": "131",
+    "type": "drawer"
+  },
+  "132_bottle": {
+    "id": "132",
+    "type": "bottle"
+  },
+  "133_bottle": {
+    "id": "133",
+    "type": "bottle"
+  },
+  "134_bottle": {
+    "id": "134",
+    "type": "bottle"
+  },
+  "135_spice jar": {
+    "id": "135",
+    "type": "spice jar"
+  },
+  "136_spice jar": {
+    "id": "136",
+    "type": "spice jar"
+  },
+  "221_kitchen door": {
+    "id": "221",
+    "type": "kitchen door"
+  },
+  "313_plate": {
+    "id": "313",
+    "type": "plate"
+  },
+  "340_spoon": {
+    "id": "340",
+    "type": "spoon"
+  },
+  "422_circular light": {
+    "id": "422",
+    "type": "circular light"
+  },
+  "92_cup": {
+    "id": "92",
+    "type": "cup"
+  },
+  "126_unknown": {
+    "id": "126",
+    "type": "unknown"
+  },
+  "52_bottle": {
+    "id": "52",
+    "type": "bottle"
+  },
+  "339_bottle": {
+    "id": "339",
+    "type": "bottle"
+  },
+  "38_unknown": {
+    "id": "38",
+    "type": "unknown"
+  },
+  "65_bowl": {
+    "id": "65",
+    "type": "bowl"
+  },
+  "80_bowl": {
+    "id": "80",
+    "type": "bowl"
+  },
+  "108_bowl": {
+    "id": "108",
+    "type": "bowl"
+  },
+  "289_bowl": {
+    "id": "289",
+    "type": "bowl"
+  },
+  "122_kitchen cabinet": {
+    "id": "122",
+    "type": "kitchen cabinet"
+  },
+  "124_unknown": {
+    "id": "124",
+    "type": "unknown"
+  },
+  "4_bottle": {
+    "id": "4",
+    "type": "bottle"
+  },
+  "11_bottle": {
+    "id": "11",
+    "type": "bottle"
+  },
+  "128_unknown": {
+    "id": "128",
+    "type": "unknown"
+  },
+  "142_bottle": {
+    "id": "142",
+    "type": "bottle"
+  },
+  "143_bottle": {
+    "id": "143",
+    "type": "bottle"
+  },
+  "116_dish": {
+    "id": "116",
+    "type": "dish"
+  },
+  "123_unknown": {
+    "id": "123",
+    "type": "unknown"
+  },
+  "127_unknown": {
+    "id": "127",
+    "type": "unknown"
+  },
+  "140_unknown": {
+    "id": "140",
+    "type": "unknown"
+  },
+  "141_drawer": {
+    "id": "141",
+    "type": "drawer"
+  },
+  "144_drawer": {
+    "id": "144",
+    "type": "drawer"
+  },
+  "145_drawer": {
+    "id": "145",
+    "type": "drawer"
+  },
+  "247_dish": {
+    "id": "247",
+    "type": "dish"
+  },
+  "273_fork": {
+    "id": "273",
+    "type": "fork"
+  },
+  "280_stove": {
+    "id": "280",
+    "type": "stove"
+  },
+  "298_plate": {
+    "id": "298",
+    "type": "plate"
+  },
+  "401_spoon": {
+    "id": "401",
+    "type": "spoon"
+  },
+  "417_unknown": {
+    "id": "417",
+    "type": "unknown"
+  },
+  "51_spice jar": {
+    "id": "51",
+    "type": "spice jar"
+  },
+  "75_spice jar": {
+    "id": "75",
+    "type": "spice jar"
+  },
+  "111_range hood": {
+    "id": "111",
+    "type": "range hood"
+  },
+  "137_drawer": {
+    "id": "137",
+    "type": "drawer"
+  },
+  "138_drawer": {
+    "id": "138",
+    "type": "drawer"
+  },
+  "139_drawer": {
+    "id": "139",
+    "type": "drawer"
+  },
+  "182_spice jar": {
+    "id": "182",
+    "type": "spice jar"
+  },
+  "188_bowl": {
+    "id": "188",
+    "type": "bowl"
+  },
+  "225_kettle": {
+    "id": "225",
+    "type": "kettle"
+  },
+  "333_dish": {
+    "id": "333",
+    "type": "dish"
+  },
+  "369_spice jar": {
+    "id": "369",
+    "type": "spice jar"
+  },
+  "363_spoon": {
+    "id": "363",
+    "type": "spoon"
+  },
+  "418_unknown": {
+    "id": "418",
+    "type": "unknown"
+  },
+  "420_unknown": {
+    "id": "420",
+    "type": "unknown"
+  },
+  "229_cooker": {
+    "id": "229",
+    "type": "cooker"
+  },
+  "415_cupboard": {
+    "id": "415",
+    "type": "cupboard"
+  },
+  "67_spoon": {
+    "id": "67",
+    "type": "spoon"
+  },
+  "223_dish": {
+    "id": "223",
+    "type": "dish"
+  },
+  "421_bottle": {
+    "id": "421",
+    "type": "bottle"
+  },
+  "430_tv": {
+    "id": "430",
+    "type": "tv"
+  },
+  "291_speaker": {
+    "id": "291",
+    "type": "speaker"
+  },
+  "189_spice jar": {
+    "id": "189",
+    "type": "spice jar"
+  },
+  "194_kitchen knife": {
+    "id": "194",
+    "type": "kitchen knife"
+  },
+  "293_knife": {
+    "id": "293",
+    "type": "knife"
+  },
+  "338_knife": {
+    "id": "338",
+    "type": "knife"
+  },
+  "103_trash can": {
+    "id": "103",
+    "type": "trash can"
+  },
+  "10_unknown": {
+    "id": "10",
+    "type": "unknown"
+  },
+  "353_unknown": {
+    "id": "353",
+    "type": "unknown"
+  },
+  "407_oven door": {
+    "id": "407",
+    "type": "oven door"
+  },
+  "269_microwave": {
+    "id": "269",
+    "type": "microwave"
+  },
+  "8_unknown": {
+    "id": "8",
+    "type": "unknown"
+  },
+  "268_microwave": {
+    "id": "268",
+    "type": "microwave"
+  },
+  "354_unknown": {
+    "id": "354",
+    "type": "unknown"
+  },
+  "406_oven": {
+    "id": "406",
+    "type": "oven"
+  },
+  "153_unknown": {
+    "id": "153",
+    "type": "unknown"
+  },
+  "150_unknown": {
+    "id": "150",
+    "type": "unknown"
+  },
+  "151_unknown": {
+    "id": "151",
+    "type": "unknown"
+  },
+  "349_cupboard": {
+    "id": "349",
+    "type": "cupboard"
+  },
+  "154_unknown": {
+    "id": "154",
+    "type": "unknown"
+  },
+  "152_refridgerator": {
+    "id": "152",
+    "type": "refridgerator"
+  },
+  "0_unknown": {
+    "id": "0",
+    "type": "unknown"
+  },
+  "2_unknown": {
+    "id": "2",
+    "type": "unknown"
+  },
+  "7_unknown": {
+    "id": "7",
+    "type": "unknown"
+  },
+  "350_unknown": {
+    "id": "350",
+    "type": "unknown"
+  },
+  "351_unknown": {
+    "id": "351",
+    "type": "unknown"
+  },
+  "352_unknown": {
+    "id": "352",
+    "type": "unknown"
+  },
+  "362_kitchen door": {
+    "id": "362",
+    "type": "kitchen door"
+  },
+  "241_door": {
+    "id": "241",
+    "type": "door"
+  },
+  "32_kitchen door frame": {
+    "id": "32",
+    "type": "kitchen door frame"
+  },
+  "287_ceiling light": {
+    "id": "287",
+    "type": "ceiling light"
+  },
+  "104_cooker": {
+    "id": "104",
+    "type": "cooker"
+  },
+  "322_bowl": {
+    "id": "322",
+    "type": "bowl"
+  },
+  "118_kitchen knife": {
+    "id": "118",
+    "type": "kitchen knife"
+  },
+  "175_cutting board": {
+    "id": "175",
+    "type": "cutting board"
+  },
+  "161_oil bottle": {
+    "id": "161",
+    "type": "oil bottle"
+  },
+  "392_fork": {
+    "id": "392",
+    "type": "fork"
+  },
+  "416_unknown": {
+    "id": "416",
+    "type": "unknown"
+  },
+  "42_bottle": {
+    "id": "42",
+    "type": "bottle"
+  },
+  "226_oil bottle": {
+    "id": "226",
+    "type": "oil bottle"
+  },
+  "312_bottle": {
+    "id": "312",
+    "type": "bottle"
+  },
+  "419_unknown": {
+    "id": "419",
+    "type": "unknown"
+  },
+  "179_bottle": {
+    "id": "179",
+    "type": "bottle"
+  },
+  "26_bottle": {
+    "id": "26",
+    "type": "bottle"
+  }
+}

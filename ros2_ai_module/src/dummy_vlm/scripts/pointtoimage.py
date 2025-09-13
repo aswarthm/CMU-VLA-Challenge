@@ -1,16 +1,20 @@
 import cv2
 
 # Load your image
-img = cv2.imread('/home/aswarth/CMU-VLA-Challenge/images/3_image.png')
+img = cv2.imread('/home/aswarth/CMU-VLA-Challenge/images/1_image.png')
 
-# Coordinates of the point
-point_x = 265*1080//1000
-point_y = 476*640//1000
+points = [
+            [485, 195], [420, 350], [550, 450], [550, 600], [485, 200]
+            ]
 
-# Draw a red circle at the point (BGR color: (0,0,255))
-cv2.circle(img, (point_x, point_y), radius=8, color=(0, 0, 255), thickness=-1)
-print(point_x, point_y)
+def plot(x, y, idx):
+    point_x = x*1920//1000
+    point_y = y*640//1000
+    cv2.putText(img, str(idx), (point_x, point_y), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+    print(point_x, point_y)
 
+for idx, point in enumerate(points):
+    plot(point[1], point[0], idx)
 # Show the image
 cv2.imshow('Image with Point', img)
 cv2.waitKey(0)

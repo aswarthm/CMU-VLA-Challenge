@@ -31,11 +31,12 @@ class Tasks(BaseModel):
 
 class WorldObject(BaseModel):
     """Describes a single object currently within the robot's field of view."""
-    id: int = Field(..., description="The unique identifier for this object, e.g., 'chair_5'.")
-    type: str = Field(...,
-                      description="The semantic label of the object, e.g., 'chair'.")
-    pose: List[float] = Field(
-        ..., description="The [X, Y, Z] coordinate of the object's center in the map frame.")
+    label: str = Field(..., description="The unique string identifier for this object, e.g., '40_chair', '102_wall', '23_water cooler'.")
+    # id: str = Field(..., description="The unique identifier for this object, e.g., 'chair_5'.")
+    # type: str = Field(...,
+    #                   description="The semantic label of the object, e.g., 'chair'.")
+    # pose: List[float] = Field(
+    #     ..., description="The [X, Y, Z] coordinate of the object's center in the map frame.")
 
 
 class VLMRequest(BaseModel):
@@ -47,10 +48,10 @@ class VLMRequest(BaseModel):
         ..., description="The raw, natural language query or instruction from the user that the robot must solve.")
     tasks: List[Subtask] = Field(
         ..., description="The AI's current step-by-step plan. This shows what has been completed, what is in progress, and what is pending.")
-    current_view: List[WorldObject] = Field(
+    current_view: List[str] = Field(
         ..., description="The robot's immediate perception, containing a list of objects currently visible in its camera feed.")
-    # all_objects_discovered: Dict[str, Any] = Field(
-    #     ..., description="The robot's long-term memory, containing a summary of all unique objects found since the task began.")
+    all_objects_discovered: List[str] = Field(
+        ..., description="The robot's long-term memory, containing a summary of all unique objects found since the task began.")
     image: str = Field(
         ..., description="A required base64 encoded string of the robot's current camera view, providing visual context for the reasoning step.")
 
@@ -87,23 +88,37 @@ class ClassifyChallenge(BaseModel):
 #     parameters=NavigateToObject.model_json_schema()
 # )
 
-class NavigateToObject(BaseModel):
+class DescribePoint(BaseModel):
     """
-    Selects a specific point in the camera's visual field and commands the robot
-    to navigate to the corresponding real-world location on the floor. Use this to
-    specify a direct navigation target from the image.
+    Analyzes the image to create a natural language description for a specific
+    navigation point. Use this to label a visually selected target.
     """
     reasoning: str = Field(...,
-                           description="A clear, step-by-step explanation for why this specific visual point was chosen as the navigation target.")
-    point_x: float = Field(...,
-                         description="The horizontal pixel coordinate of the target point, normalized to a 0-1000 scale, where 0 is the far left of the image.")
-    point_y: float = Field(...,
-                         description="The vertical pixel coordinate of the target point, normalized to a 0-1000 scale, where 0 is the top of the image.")
+                           description="A step-by-step explanation for why this location was chosen and why the description is accurate.")
+    description: str = Field(...,
+                           description="A verbose, natural language description of the object or location at the specified point, e.g., 'the potted plant in the corner'.")
 
-navigate_to_object_fn = FunctionDeclaration(
+# This is the corresponding FunctionDeclaration for the tool
+describe_point_fn = FunctionDeclaration(
+    name="describe_point",
+    description="Creates a natural language description for a specific navigation point in the image.",
+    parameters=DescribePoint.model_json_schema()
+)
+
+class NavigateToPoint(BaseModel):
+    """
+    Identifies a specific navigation goal in the provided image and returns its
+    pixel coordinates. Use this to translate a visual target into a point.
+    """
+    reasoning: str = Field(...,
+                           description="A step-by-step explanation for how the top points were chosen.")
+    points: List[List[float]] = Field(...,
+                             description="A list of 5 potential navigation points, sorted in decreasing order of probability, containing the [y, x] coordinates of the target point. The values MUST be normalized to a 0-1000 scale, where [0, 0] is the top-left corner of the image.")
+# This is the corresponding FunctionDeclaration for the tool
+navigate_to_point_fn = FunctionDeclaration(
     name="navigate_to_point",
-    description="Selects a specific point in the camera's visual field and commands the robot to navigate to the corresponding real-world location on the floor.",
-    parameters=NavigateToObject.model_json_schema()
+    description="Selects a list of 5 visual points in the image to potentially navigate towards.",
+    parameters=NavigateToPoint.model_json_schema()
 )
 
 
@@ -122,20 +137,70 @@ submit_final_count_fn = FunctionDeclaration(
     parameters=SubmitFinalCount.model_json_schema()
 )
 
+class VerifyObjectExists(BaseModel):
+    """
+    Checks if a specific object ID exists in the robot's ground-truth semantic list.
+    Use this as a confirmation step before submitting an answer.
+    """
+    reasoning: str = Field(...,
+                           description="A step-by-step explanation for why you believe this specific object ID is the correct target.")
+    target_id: str = Field(...,
+                           description="The unique ID of the object you want to verify, e.g., '40_chair', '102_wall', '23_water cooler'.")
+
+verify_object_exists_fn = FunctionDeclaration(
+    name="verify_object_exists",
+    description="",
+    parameters=VerifyObjectExists.model_json_schema()
+)
+
+class GetVisualConfirmation(BaseModel):
+    """
+    Commands the robot to draw a bounding box for a hypothesized target object ID.
+    This tool is used to get visual feedback to confirm if the object highlighted
+    by the system correctly matches the requirements of the user's challenge question.
+    """
+    reasoning: str = Field(...,
+                           description="Explain your hypothesis and what specific attribute or spatial relationship you are trying to confirm with this visual check.")
+    target_id: str = Field(...,
+                           description="The unique ID of the object to be highlighted with a bounding box for confirmation, e.g., '40_chair', '102_wall', '23_water cooler'.")
+
+get_visual_confirmation_fn = FunctionDeclaration(
+    name="get_visual_confirmation",
+    description="Asks the system to draw a bounding box for a specific object ID to visually confirm it meets the user's requirements.",
+    parameters=GetVisualConfirmation.model_json_schema()
+)
+
+class RequestFilteredView(BaseModel):
+    """
+    Call this if the current annotated image is too cluttered with irrelevant
+    bounding boxes. This will request a new image with annotations only for the
+    specified object labels.
+    """
+    reasoning: str = Field(...,
+                           description="Explain why the current view is too cluttered and which objects are most important to focus on.")
+    labels_to_keep: List[str] = Field(...,
+                                     description="A list of the only object labels that should be annotated in the new image, e.g., '40_chair', '102_wall', '23_water cooler'.")
+
+request_filtered_view_fn = FunctionDeclaration(
+    name="request_filtered_view",
+    description="Requests a new, less cluttered image with annotations for only a specific set of object labels.",
+    parameters=RequestFilteredView.model_json_schema()
+)
 
 class SubmitFinalObjectReference(BaseModel):
     """
-    Submits the final object ID for an 'object_reference' type question. Use this
-    tool only when you have uniquely identified the single object the user is referring to.
+    Submits the final, verified object ID for an 'object_reference' type question.
+    Only call this tool after 'verify_object_exists' has returned a success confirmation
+    for the target object.
     """
-    reasoning: str = Field(..., description="Explain why this specific object is the correct final answer and confirm the task is complete.")
+    reasoning: str = Field(..., description="Explain why this specific object is the correct final answer, referencing visual evidence")
     answer: str = Field(
-        ..., description="The unique string ID of the single target object, e.g., 'chair_5'.")
+        ..., description="The unique string ID of the single target object, which MUST be from the list of objects returned by the 'verify_object_exists' tool.")
 
 
 submit_final_object_reference_fn = FunctionDeclaration(
     name="submit_final_object_reference",
-    description="Submits the final object ID for an 'object_reference' type question.",
+    description="Submits the final, verified object ID for an 'object_reference' type question.",
     parameters=SubmitFinalObjectReference.model_json_schema()
 )
 
@@ -174,13 +239,3 @@ set_plan_fn = FunctionDeclaration(
     parameters=SetPlan.model_json_schema()
 )
 
-
-all_tools = Tool(
-    function_declarations=[
-        # set_plan_fn,
-        navigate_to_object_fn,
-        submit_final_count_fn,
-        submit_final_object_reference_fn,
-        finish_instruction_following_fn,
-    ]
-)
