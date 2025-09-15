@@ -1,0 +1,3 @@
+FROM aswm/ubuntu20_ros
+
+CMD ["bash"]
